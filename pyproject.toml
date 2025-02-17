@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "pub_lambda"
+version = "0.1.0"
+description = "Create/Publish AWS Lambda CLI"
+authors = ["Mikhail Dorokhovich"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+typer = "0.15.1"
+inquirerpy = "0.3.4"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
