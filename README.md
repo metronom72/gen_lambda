@@ -15,8 +15,12 @@ Gen Lambda is a CLI tool designed to simplify the process of creating, publishin
 Before using Gen Lambda, ensure you have the following installed and configured:
 
 - **Python 3.11+**
+- **Python 3.12+**
+- **Python 3.13+**
 - **Terraform**
-- **Node.js**
+- **Node.js 18**
+- **Node.js 20**
+- **Node.js 22**
 - **AWS CLI** (configured with `aws configure`)
 
 ## Installation

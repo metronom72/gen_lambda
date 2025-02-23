@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gen_lambda"
-version = "0.1.1"
+version = "0.1.2"
 description = "Create/Publish AWS Lambda CLI"
 authors = ["Mikhail Dorokhovich"]
 license = "MIT"

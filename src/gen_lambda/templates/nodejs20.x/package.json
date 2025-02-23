@@ -1,0 +1,15 @@
+{
+  "name": "Nodejs22.x Lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda function with Nodejs22.x Runtime",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1"
+  },
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.147",
+    "aws-lambda": "^1.0.7"
+  }
+}
