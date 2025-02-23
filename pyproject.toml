@@ -10,7 +10,7 @@ include = [{ path="gen_lambda/templates/**/*" }]
 
 [project]
 name = "gen_lambda"
-version = "0.1.1"
+version = "0.1.2"
 description = "Create/Publish AWS Lambda CLI"
 authors = [{name="Mikhail Dorokhovich"}]
 license = "MIT"
