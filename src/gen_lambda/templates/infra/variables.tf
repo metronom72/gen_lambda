@@ -22,4 +22,15 @@ variable "lambda_name" {
 variable "lambda_role_arn" {
   description = "Existing IAM Role ARN for Lambda"
   type        = string
+  default     = ""
+}
+
+variable "archive_path" {
+  description = "Path to archive file"
+  type        = string
+}
+
+variable "runtime" {
+  description = "Identifier of runtime"
+  type        = string
 }

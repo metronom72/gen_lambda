@@ -12,9 +12,9 @@ provider "aws" {
 }
 
 locals {
-  lambda_full_name = "${var.project_name}__${var.lambda_name}__${var.environment}"
-  bucket_name      = "${var.project_name}"
-  archive_path     = "../../${var.lambda_name}.zip"
+  lambda_full_name = "${substr(var.project_name, 0, 10)}__${substr(var.environment, 0, 4)}__${substr(var.lambda_name, 0, 10)}"
+  bucket_name      = var.project_name
+  lambda_role_arn = var.lambda_role_arn != "" ? var.lambda_role_arn : aws_iam_role.lambda_role[0].arn
 }
 
 data "aws_s3_bucket" "existing_bucket" {
@@ -24,8 +24,8 @@ data "aws_s3_bucket" "existing_bucket" {
 resource "aws_s3_object" "lambda_code" {
   bucket = data.aws_s3_bucket.existing_bucket.id
   key    = "${var.environment}/${var.lambda_name}.zip"
-  source = local.archive_path
-  etag   = filemd5(local.archive_path)
+  source = var.archive_path
+  etag   = filemd5(var.archive_path)
 
   tags = {
     Project     = var.project_name
@@ -35,14 +35,14 @@ resource "aws_s3_object" "lambda_code" {
 }
 
 resource "aws_lambda_function" "lambda_function" {
-  function_name    = local.lambda_full_name
-  role            = var.lambda_role_arn
+  function_name   = local.lambda_full_name
+  role            = local.lambda_role_arn
   handler         = "lambda_function.lambda_handler"
-  runtime         = "nodejs22.x"
+  runtime         = var.runtime
   s3_bucket       = local.bucket_name
   s3_key          = aws_s3_object.lambda_code.key
   publish         = true
-  source_code_hash = filebase64sha256(local.archive_path)
+  source_code_hash = filebase64sha256(var.archive_path)
 
   environment {
     variables = {
