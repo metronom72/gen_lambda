@@ -151,7 +151,7 @@ def setup(
 
     try:
         if not any([publish, remove, generate, zip]):
-            typer.secho("Error: You must provide at least one action (--publish, --remove, or --generate).",
+            typer.secho("Error: You must provide at least one action (--publish, --remove, --zip, or --generate).",
                         fg=typer.colors.RED, bold=True)
             raise typer.Exit(code=1)
 

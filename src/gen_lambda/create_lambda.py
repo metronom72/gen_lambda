@@ -1,3 +1,4 @@
+import re
 import shutil
 import os
 import subprocess
@@ -5,6 +6,20 @@ import subprocess
 import typer
 from pathlib import Path
 import importlib.resources as pkg_resources
+
+
+def extract_runtime(runtime: str) -> str:
+    if runtime.startswith("go"):
+        match = re.search(r"\(?(provided\.al2|provided\.al2023)\)?", runtime)
+        if match:
+            return match.group(1)
+        typer.secho(f"Error: Invalid Go runtime format '{runtime}'. Expected 'go(provided.al2)' or 'go(provided.al2023)'.", fg=typer.colors.RED)
+        raise typer.Exit()
+    return runtime
+
+
+def extract_language(runtime: str) -> str:
+    return "go" if runtime.startswith("go") else runtime
 
 
 def get_templates_dir():
@@ -23,7 +38,6 @@ def get_templates_dir():
 
 def get_infra_dir():
     try:
-        typer.secho(pkg_resources)
         templates_path = pkg_resources.files(__package__) / "templates"
     except AttributeError:
         typer.secho(__file__)
@@ -69,6 +83,20 @@ def install_dependencies(runtime: str, lambda_target_dir: Path):
             else:
                 typer.secho("No package.json file found. Skipping Node.js dependency installation.",
                             fg=typer.colors.YELLOW)
+        elif runtime.startswith("go"):
+            go_mod_file = lambda_target_dir / "go.mod"
+
+            if not go_mod_file.exists():
+                typer.secho("go.mod file not found. Initializing Go module...", fg=typer.colors.BLUE)
+
+                module_name = f"{lambda_target_dir.name}"
+
+                subprocess.run(["go", "mod", "init", module_name], cwd=lambda_target_dir, check=True)
+                typer.secho(f"Go module '{module_name}' initialized successfully.", fg=typer.colors.GREEN)
+
+            typer.secho(f"Installing Go dependencies in '{lambda_target_dir}'...", fg=typer.colors.BLUE)
+            subprocess.run(["go", "mod", "tidy"], cwd=lambda_target_dir, check=True)
+            typer.secho("Go dependencies installed successfully.", fg=typer.colors.GREEN)
 
         else:
             typer.secho(f"Unsupported runtime: {runtime}. Skipping dependency installation.", fg=typer.colors.RED)
@@ -115,10 +143,11 @@ def create_lambda(lambda_name: str, project_name: str, environment: str, runtime
             "LAMBDA_NAME": lambda_name,
             "PROJECT_NAME": project_name,
             "ENVIRONMENT": environment,
-            "RUNTIME": runtime,
+            "RUNTIME": extract_runtime(runtime),
             "LAMBDA_PATH": str(lambda_target_dir),
             "ARCHIVE_PATH": str(archive_path),
-            "AWS_REGION": aws_region
+            "AWS_REGION": aws_region,
+            "LAMBDA_TEMPLATE": runtime,
         }
 
         env_file = lambda_target_dir / ".env"
@@ -151,7 +180,7 @@ def create_lambda(lambda_name: str, project_name: str, environment: str, runtime
                 f.writelines(new_entries)
             typer.secho(f"Updated Terraform variables file at '{tfvars_file}'", fg=typer.colors.GREEN)
 
-        install_dependencies(runtime, lambda_target_dir)
+        install_dependencies(extract_language(runtime), lambda_target_dir)
 
     except Exception as e:
         typer.secho(f"Unexpected error: {str(e)}", fg=typer.colors.RED, bold=True)

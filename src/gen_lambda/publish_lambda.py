@@ -25,6 +25,22 @@ def get_runtime_from_tfvars(tfvars_path: Path) -> str:
         raise typer.Exit()
 
 
+def get_template_from_tfvars(tfvars_path: Path) -> str:
+    if not tfvars_path.exists():
+        print("Error: terraform.tfvars not found in infra/ folder.")
+        raise typer.Exit()
+
+    with tfvars_path.open() as f:
+        content = f.read()
+
+    match = re.search(r'lambda_template\s*=\s*"([^"]+)"', content)
+    if match:
+        return match.group(1)
+    else:
+        print("Error: 'lambda_template' variable not found in terraform.tfvars.")
+        raise typer.Exit()
+
+
 def zip_lambdas():
     cwd = Path.cwd()
     lambda_name = cwd.name
@@ -34,13 +50,14 @@ def zip_lambdas():
     package_json_path = cwd / "package.json"
     tfvars_path = cwd / "infra/terraform.tfvars"
 
+    template = get_template_from_tfvars(tfvars_path)
     runtime = get_runtime_from_tfvars(tfvars_path)
 
     if zip_path.exists():
         print(f"Removing old ZIP file: {zip_filename}")
         zip_path.unlink()
 
-    if runtime.startswith("nodejs"):
+    if template.startswith("nodejs"):
         if package_json_path.exists():
             with package_json_path.open() as f:
                 package_json = json.load(f)
@@ -72,7 +89,7 @@ def zip_lambdas():
 
         print(f"ZIP created: {zip_path}")
 
-    elif runtime.startswith("python"):
+    elif template.startswith("python"):
         venv_dir = cwd / ".venv"
         if not venv_dir.exists():
             print("Error: .venv not found. Run install_dependencies first.")
@@ -90,8 +107,46 @@ def zip_lambdas():
 
         print(f"ZIP created: {zip_path}")
 
+    elif template.startswith("go"):
+        go_binary = cwd / "dist/bootstrap"
+        go_source = cwd / "cmd/handler/main.go"
+
+        print("Building Go Lambda binary for Amazon Linux (ARM64)...")
+
+        env = os.environ.copy()
+        env["GOOS"] = "linux"
+        env["GOARCH"] = "arm64"
+        env["CGO_ENABLED"] = "0"
+
+        build_command = [
+            "go", "build",
+            "-tags", "lambda.norpc",
+            "-trimpath",
+            "-ldflags", "-s -w",
+            "-o", str(go_binary),
+            str(go_source)
+        ]
+
+        try:
+            subprocess.run(build_command, cwd=cwd, check=True, env=env, capture_output=True, text=True)
+            print("Go build completed successfully.")
+
+        except subprocess.CalledProcessError as e:
+            print(f"Error: Go build failed.\n{e.stderr}")
+            raise typer.Exit()
+
+        if not go_binary.exists():
+            print("Error: Go build failed, bootstrap binary not found.")
+            raise typer.Exit()
+
+        print(f"Creating ZIP: {zip_path}")
+        with ZipFile(zip_path, 'w') as zipf:
+            zipf.write(go_binary, "bootstrap")  # Ensure "bootstrap" is at the root
+
+        print(f"ZIP created: {zip_path}")
+
     else:
-        print(f"Unsupported runtime: {runtime}. Skipping zipping process.")
+        print(f"Unsupported template: {template}, with runtime: {runtime}. Skipping zipping process.")
         raise typer.Exit()
 
 

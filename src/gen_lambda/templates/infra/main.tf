@@ -35,14 +35,15 @@ resource "aws_s3_object" "lambda_code" {
 }
 
 resource "aws_lambda_function" "lambda_function" {
-  function_name   = local.lambda_full_name
-  role            = local.lambda_role_arn
-  handler         = "lambda_function.lambda_handler"
-  runtime         = var.runtime
-  s3_bucket       = local.bucket_name
-  s3_key          = aws_s3_object.lambda_code.key
-  publish         = true
-  source_code_hash = filebase64sha256(var.archive_path)
+  function_name     = local.lambda_full_name
+  role              = local.lambda_role_arn
+  handler           = "lambda_function.lambda_handler"
+  runtime           = var.runtime
+  s3_bucket         = local.bucket_name
+  s3_key            = aws_s3_object.lambda_code.key
+  publish           = true
+  source_code_hash  = filebase64sha256(var.archive_path)
+  architectures     = ["arm64"]
 
   environment {
     variables = {
