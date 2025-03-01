@@ -1,0 +1,81 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+env/
+*.venv
+
+# Editor & OS-specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+*.out
+
+# Python dependencies
+Pipfile
+Pipfile.lock
+poetry.lock
+requirements.txt
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# MyPy
+.mypy_cache/
+
+# Pytest cache
+.pytest_cache/
+
+# Coverage reports
+.coverage
+htmlcov/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Terraform specific (in infra folder)
+infra/.terraform/
+infra/.terraform.lock.hcl
+infra/terraform.tfstate
+infra/terraform.tfstate.backup
+infra/terraform.tfvars
+infra/*.tfvars.json
+infra/crash.log
+infra/override.tf
+infra/override.tf.json
+infra/*.auto.tfvars
+infra/*.auto.tfvars.json
+
+# Ansible
+*.retry
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Kubernetes
+*.kubeconfig
+.kube/
+
+# Secrets & credentials (adjust as necessary)
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+secrets/
+config.json
+.envrc

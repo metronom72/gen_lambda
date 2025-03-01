@@ -1,0 +1,78 @@
+# Go build artifacts
+/bin/
+/pkg/
+/out/
+/dist/
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.o
+*.lo
+*.la
+
+# Go modules & dependencies
+/go/bin/
+/go/pkg/
+vendor/
+go.sum
+go.work.sum
+
+# IDE & editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+*.out
+
+# Test & coverage
+*.test
+*.cover
+*.cov
+cover.out
+coverage/
+.nyc_output/
+
+# Environment variables & secrets
+.env
+.env.*.local
+.npmrc
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+secrets/
+config.json
+
+# Terraform specific (in infra folder)
+infra/.terraform/
+infra/.terraform.lock.hcl
+infra/terraform.tfstate
+infra/terraform.tfstate.backup
+infra/terraform.tfvars
+infra/*.tfvars.json
+infra/crash.log
+infra/override.tf
+infra/override.tf.json
+infra/*.auto.tfvars
+infra/*.auto.tfvars.json
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Kubernetes
+*.kubeconfig
+.kube/
+
+# Golang CI/CD & Linter
+golangci-lint.cache/
+golangci-lint.out

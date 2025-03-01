@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gen_lambda"
-version = "0.1.3"
+version = "0.1.4"
 description = "Create/Publish AWS Lambda CLI"
 authors = ["Mikhail Dorokhovich"]
 license = "MIT"
@@ -10,7 +10,7 @@ include = [{ path="gen_lambda/templates/**/*" }]
 
 [project]
 name = "gen_lambda"
-version = "0.1.3"
+version = "0.1.4"
 description = "Create/Publish AWS Lambda CLI"
 authors = [{name="Mikhail Dorokhovich"}]
 license = "MIT"

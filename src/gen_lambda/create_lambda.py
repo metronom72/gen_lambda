@@ -130,6 +130,13 @@ def create_lambda(lambda_name: str, project_name: str, environment: str, runtime
         shutil.copytree(source_template, lambda_target_dir)
         typer.secho(f"Copied template '{runtime}' to '{lambda_target_dir}'", fg=typer.colors.GREEN)
 
+        gitignore_template = lambda_target_dir / ".gitignore.template"
+        gitignore_target = lambda_target_dir / ".gitignore"
+
+        if gitignore_template.exists():
+            gitignore_template.rename(gitignore_target)
+            typer.secho(f"Renamed '.gitignore.template' to '.gitignore' in '{lambda_target_dir}'", fg=typer.colors.GREEN)
+
         templates_infra_dir = templates_dir / "infra"
         target_infra_dir = lambda_target_dir / "infra"
 
